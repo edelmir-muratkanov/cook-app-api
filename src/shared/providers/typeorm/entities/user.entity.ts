@@ -1,4 +1,11 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm'
+import {
+	Column,
+	Entity,
+	Index,
+	JoinTable,
+	ManyToMany,
+	OneToMany,
+} from 'typeorm'
 
 import { BaseEntity } from './base.entity'
 import { Comment } from './comment.entity'
@@ -12,9 +19,11 @@ enum ROLE {
 
 @Entity()
 export class User extends BaseEntity {
+	@Index()
 	@Column({ unique: true })
 	email: string
 
+	@Index()
 	@Column({ unique: true })
 	username: string
 

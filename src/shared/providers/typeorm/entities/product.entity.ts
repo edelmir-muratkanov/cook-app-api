@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm'
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
 
 import { BaseEntity } from './base.entity'
 import { Ingredient } from './ingredient.entity'
@@ -9,6 +9,7 @@ export class Product extends BaseEntity {
 	@ManyToOne(() => ProductCategory, category => category.products)
 	category: ProductCategory
 
+	@Index()
 	@Column({ unique: true })
 	name: string
 

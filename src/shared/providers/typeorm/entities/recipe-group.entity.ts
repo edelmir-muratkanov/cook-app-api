@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm'
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
 
 import { BaseEntity } from './base.entity'
 import { RecipeCategory } from './recipe-category.entity'
@@ -9,6 +9,7 @@ export class RecipeGroup extends BaseEntity {
 	@ManyToOne(() => RecipeCategory, category => category.groups)
 	category: RecipeCategory
 
+	@Index()
 	@Column({ unique: true })
 	name: string
 

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from 'typeorm'
+import { Column, Entity, Index, ManyToOne } from 'typeorm'
 
 import { BaseEntity } from './base.entity'
 import { Product } from './product.entity'
@@ -12,6 +12,7 @@ export enum UNIT {
 }
 
 @Entity()
+@Index(['recipe.id', 'product.id'], { unique: true })
 export class Ingredient extends BaseEntity {
 	@ManyToOne(() => Recipe, recipe => recipe.ingredients)
 	recipe: Recipe
