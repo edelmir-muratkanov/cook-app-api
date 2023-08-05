@@ -12,7 +12,7 @@ import { Comment } from './comment.entity'
 import { Rating } from './rating.entity'
 import { Recipe } from './recipe.entity'
 
-enum ROLE {
+export enum ROLE {
 	GUEST = 'guest',
 	ADMIN = 'admin',
 }
