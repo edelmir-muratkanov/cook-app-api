@@ -1,31 +1,69 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+	BadRequestException,
+	Injectable,
+	Logger,
+	OnModuleInit,
+} from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
 import { genSalt, hash } from 'bcrypt'
-import { DeleteResult, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { User } from 'src/shared/providers/typeorm/entities'
+import { ROLE, User } from 'src/shared/providers/typeorm/entities'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
 	constructor(
 		@InjectRepository(User) private readonly userRepository: Repository<User>,
+		private readonly configService: ConfigService,
 	) {}
+
+	async onModuleInit() {
+		const email = this.configService.get<string>('APP_ADMIN_EMAIL')
+		const username = this.configService.get<string>('APP_ADMIN_USERNAME')
+		const password = this.configService.get<string>('APP_ADMIN_PASSWORD')
+
+		if (!email || !username || !password) {
+			throw Error('Admin credentials not set in env')
+		}
+
+		const admin = await this.userRepository.findOne({ where: { email } })
+		if (!admin) {
+			const hashPassword = await this.hashPassword(password)
+			const newAdmin = this.userRepository.create({
+				email,
+				username,
+				password: hashPassword,
+				role: ROLE.ADMIN,
+			})
+			await this.userRepository.save(newAdmin)
+		}
+
+		if (admin && admin?.role !== ROLE.ADMIN) {
+			admin.role = ROLE.ADMIN
+			await this.userRepository.save(admin)
+		}
+
+		Logger.log(
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			`Admin credentials ${admin?.email} ${admin?.username} ${password}, role: ${admin?.role}`,
+			'ADMIN',
+		)
+	}
 
 	async create(dto: CreateUserDto) {
 		const user = await this.byEmail(dto.email)
 		if (user) {
 			throw new BadRequestException('User already exists')
 		}
-		const salt = await genSalt(10)
-		const passwordHash = await hash(dto.password, salt)
 
 		const newUser = this.userRepository.create({
 			...dto,
-			password: passwordHash,
+			password: await this.hashPassword(dto.password),
 		})
 		return await this.userRepository.save(newUser)
 	}
@@ -76,5 +114,10 @@ export class UserService {
 		}
 
 		return true
+	}
+
+	private async hashPassword(password: string) {
+		const salt = await genSalt(10)
+		return await hash(password, salt)
 	}
 }
