@@ -61,7 +61,7 @@ export class UserController {
 	@ApiOkResponse({ type: User })
 	@ApiErrorResponse()
 	@Put(':id')
-	async update(@Param('id') { id }: ParamIdDto, @Body() dto: UpdateUserDto) {
+	async update(@CurrentUser('id') id: string, @Body() dto: UpdateUserDto) {
 		return this.userService.update(id, dto)
 	}
 
@@ -69,7 +69,7 @@ export class UserController {
 	@ApiOkResponse({ type: Boolean })
 	@ApiErrorResponse()
 	@Delete(':id')
-	async remove(@Param('id') { id }: ParamIdDto) {
+	async remove(@CurrentUser('id') id: string) {
 		return this.userService.remove(id)
 	}
 }
