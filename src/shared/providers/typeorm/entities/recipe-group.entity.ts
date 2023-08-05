@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger'
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
 
 import { BaseEntity } from './base.entity'
@@ -7,6 +8,7 @@ import { Recipe } from './recipe.entity'
 @Entity({ name: 'recipe_group' })
 export class RecipeGroup extends BaseEntity {
 	@ManyToOne(() => RecipeCategory, category => category.groups)
+	@ApiHideProperty()
 	category: RecipeCategory
 
 	@Index()

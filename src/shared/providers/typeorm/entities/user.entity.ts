@@ -1,3 +1,5 @@
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
+import { Exclude } from 'class-transformer'
 import {
 	Column,
 	Entity,
@@ -27,10 +29,13 @@ export class User extends BaseEntity {
 	@Column({ unique: true })
 	username: string
 
+	@ApiHideProperty()
+	@Exclude({ toPlainOnly: true })
 	@Column()
 	password: string
 
 	@Column({ type: 'enum', enum: ROLE, default: ROLE.GUEST })
+	@ApiProperty({ enum: ROLE, enumName: 'Role' })
 	role: ROLE
 
 	@ManyToMany(() => User, user => user.following)

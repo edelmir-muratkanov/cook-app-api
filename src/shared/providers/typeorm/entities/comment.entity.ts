@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger'
 import {
 	Column,
 	Entity,
@@ -18,6 +19,7 @@ export class Comment extends BaseEntity {
 	user: User
 
 	@ManyToOne(() => Recipe, recipe => recipe.comments)
+	@ApiHideProperty()
 	recipe: Recipe
 
 	@Column()

@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger'
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 
 import { Recipe } from './recipe.entity'
@@ -17,6 +18,7 @@ export class Rating {
 	user: User
 
 	@ManyToOne(() => Recipe, recipe => recipe.ratings)
+	@ApiHideProperty()
 	recipe: Recipe
 
 	@Column({ type: 'enum', enum: REACTION })
