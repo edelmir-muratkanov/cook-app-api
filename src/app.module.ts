@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common'
 
 import { CommentModule } from './feedback/comment/comment.module'
 import { RatingModule } from './feedback/rating/rating.module'
-import { CategoryModule as ProductCategoryModule } from './product/category/category.module'
+import { CategoryModule as ProductCategoryModule } from './products/category/category.module'
+import { ProductModule } from './products/product/product.module'
 import { CategoryModule } from './recipes/category/category.module'
 import { CuisineModule } from './recipes/cuisine/cuisine.module'
 import { GroupModule } from './recipes/group/group.module'
@@ -21,6 +22,7 @@ import { UserModule } from './users/user/user.module'
 		CategoryModule,
 		GroupModule,
 		CuisineModule,
+		ProductModule,
 	],
 })
 export class AppModule {}
