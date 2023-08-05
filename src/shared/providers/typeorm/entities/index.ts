@@ -23,3 +23,15 @@ export const ENTITIES = [
 	Comment,
 	Rating,
 ]
+
+export * from './comment.entity'
+export * from './cuisine.entity'
+export * from './ingredient.entity'
+export * from './instruction.entity'
+export * from './product-category.entity'
+export * from './product.entity'
+export * from './rating.entity'
+export * from './recipe-category.entity'
+export * from './recipe-group.entity'
+export * from './recipe.entity'
+export * from './user.entity'
