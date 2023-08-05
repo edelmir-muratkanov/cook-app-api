@@ -1,27 +1,69 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { genSalt, hash } from 'bcrypt'
+import { Repository } from 'typeorm'
+
+import { User } from 'src/shared/providers/typeorm/entities'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 
 @Injectable()
 export class UserService {
-	create(createUserDto: CreateUserDto) {
-		return 'This action adds a new user'
+	constructor(
+		@InjectRepository(User) private readonly userRepository: Repository<User>,
+	) {}
+
+	async create(dto: CreateUserDto) {
+		const user = await this.byEmail(dto.email)
+		if (user) {
+			throw new BadRequestException('User already exists')
+		}
+		const salt = await genSalt(10)
+		const passwordHash = await hash(dto.password, salt)
+
+		const newUser = this.userRepository.create({
+			...dto,
+			password: passwordHash,
+		})
+		return await this.userRepository.save(newUser)
 	}
 
-	findAll() {
-		return `This action returns all user`
+	async findAll() {
+		return await this.userRepository.findAndCount()
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} user`
+	async byId(id: string) {
+		return await this.userRepository.findOne({
+			where: { id },
+			relations: {
+				followers: true,
+				following: true,
+				recipes: true,
+				ratings: true,
+				comments: true,
+			},
+		})
 	}
 
-	update(id: number, updateUserDto: UpdateUserDto) {
-		return `This action updates a #${id} user`
+	async byEmail(email: string) {
+		return await this.userRepository.findOne({
+			where: { email },
+			relations: {
+				followers: true,
+				following: true,
+				recipes: true,
+				ratings: true,
+				comments: true,
+			},
+		})
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} user`
+	async update(id: string, dto: UpdateUserDto) {
+		return await this.userRepository.update(id, dto)
+	}
+
+	async remove(id: string) {
+		return await this.userRepository.delete(id)
 	}
 }
