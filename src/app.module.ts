@@ -1,6 +1,10 @@
-import { Module, ValidationPipe } from '@nestjs/common'
+import {
+	ClassSerializerInterceptor,
+	Module,
+	ValidationPipe,
+} from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { APP_FILTER, APP_PIPE } from '@nestjs/core'
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 
 import { FeedbackModule } from './feedback/feedback.module'
 import { ProductsModule } from './products/products.module'
@@ -27,6 +31,10 @@ import { UsersModule } from './users/users.module'
 		{
 			provide: APP_FILTER,
 			useClass: AllExceptionsFilter,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: ClassSerializerInterceptor,
 		},
 	],
 })
