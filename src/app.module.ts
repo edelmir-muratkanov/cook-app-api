@@ -3,10 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 
 import { FeedbackModule } from './feedback/feedback.module'
 import { ProductsModule } from './products/products.module'
-import { CategoryModule as RecipeCategoryModule } from './recipes/category/category.module'
-import { CuisineModule } from './recipes/cuisine/cuisine.module'
-import { GroupModule } from './recipes/group/group.module'
-import { RecipeModule } from './recipes/recipe/recipe.module'
+import { RecipesModule } from './recipes/recipes.module'
 import { ProvidersModule } from './shared/providers/providers.module'
 import { UsersModule } from './users/users.module'
 
@@ -15,13 +12,10 @@ import { UsersModule } from './users/users.module'
 		ConfigModule.forRoot({ isGlobal: true }),
 		ProvidersModule,
 
-		RecipeModule,
-		RecipeCategoryModule,
-		GroupModule,
-		CuisineModule,
 		FeedbackModule,
 		UsersModule,
 		ProductsModule,
+		RecipesModule,
 	],
 })
 export class AppModule {}
