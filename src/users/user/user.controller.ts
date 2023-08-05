@@ -15,7 +15,7 @@ import { Auth } from 'src/shared/decorators/auth.decorator'
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { ParamIdDto } from 'src/shared/dto/param-id.dto'
-import { User } from 'src/shared/providers/typeorm/entities'
+import { ROLE, User } from 'src/shared/providers/typeorm/entities'
 
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserService } from './user.service'
@@ -24,6 +24,7 @@ import { UserService } from './user.service'
 @Controller('user')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
+
 	@Auth()
 	@ApiOperation({ summary: 'Получение профиля' })
 	@ApiOkResponse({ type: User })
@@ -41,6 +42,7 @@ export class UserController {
 		return this.userService.byId(id)
 	}
 
+	@Auth(ROLE.ADMIN)
 	@ApiOperation({ summary: 'Получение всех пользователей' })
 	@ApiPaginatedResponse(
 		OmitType(User, [
@@ -57,6 +59,7 @@ export class UserController {
 		return await this.userService.findAll(pagination)
 	}
 
+	@Auth()
 	@ApiOperation({ summary: 'Обновление пользователя' })
 	@ApiOkResponse({ type: User })
 	@ApiErrorResponse()
@@ -65,6 +68,7 @@ export class UserController {
 		return this.userService.update(id, dto)
 	}
 
+	@Auth()
 	@ApiOperation({ summary: 'Удаление пользователя' })
 	@ApiOkResponse({ type: Boolean })
 	@ApiErrorResponse()
