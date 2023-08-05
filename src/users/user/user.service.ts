@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { genSalt, hash } from 'bcrypt'
-import { Repository } from 'typeorm'
+import { DeleteResult, Repository } from 'typeorm'
 
+import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { User } from 'src/shared/providers/typeorm/entities'
 
 import { CreateUserDto } from './dto/create-user.dto'
@@ -29,8 +30,12 @@ export class UserService {
 		return await this.userRepository.save(newUser)
 	}
 
-	async findAll() {
-		return await this.userRepository.findAndCount()
+	async findAll(pagination: PaginationDto) {
+		const [data, count] = await this.userRepository.findAndCount({
+			skip: pagination.offset,
+			take: pagination.limit,
+		})
+		return { data, count }
 	}
 
 	async byId(id: string) {
@@ -64,6 +69,12 @@ export class UserService {
 	}
 
 	async remove(id: string) {
-		return await this.userRepository.delete(id)
+		try {
+			await this.userRepository.delete(id)
+		} catch {
+			return false
+		}
+
+		return true
 	}
 }
