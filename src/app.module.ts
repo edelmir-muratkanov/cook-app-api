@@ -10,16 +10,12 @@ import { CuisineModule } from './recipes/cuisine/cuisine.module'
 import { GroupModule } from './recipes/group/group.module'
 import { RecipeModule } from './recipes/recipe/recipe.module'
 import { ProvidersModule } from './shared/providers/providers.module'
-import { AuthModule } from './users/auth/auth.module'
-import { UserModule } from './users/user/user.module'
+import { UsersModule } from './users/users.module'
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
 		ProvidersModule,
-
-		AuthModule,
-		UserModule,
 
 		ProductCategoryModule,
 		IngredientModule,
@@ -30,6 +26,7 @@ import { UserModule } from './users/user/user.module'
 		GroupModule,
 		CuisineModule,
 		FeedbackModule,
+		UsersModule,
 	],
 })
 export class AppModule {}
