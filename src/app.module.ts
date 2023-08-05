@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
 
 import { CommentModule } from './feedback/comment/comment.module'
 import { RatingModule } from './feedback/rating/rating.module'
@@ -14,6 +15,7 @@ import { UserModule } from './users/user/user.module'
 
 @Module({
 	imports: [
+		ConfigModule.forRoot({ isGlobal: true }),
 		AuthModule,
 		UserModule,
 		RatingModule,
