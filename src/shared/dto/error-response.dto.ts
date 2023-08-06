@@ -1,13 +1,23 @@
-class Excetion {
-	name: string
-	message: string[] | string
-}
+import { ApiProperty } from '@nestjs/swagger'
+
+import { Exception } from './exception.dto'
 
 export class ErrorResponseDto {
+	@ApiProperty()
 	statusCode: number
+
+	@ApiProperty()
 	timestamp: string
+
+	@ApiProperty()
 	path: string
-	params: unknown
-	query: unknown
-	exception: Excetion
+
+	@ApiProperty()
+	params: any
+
+	@ApiProperty()
+	query: any
+
+	@ApiProperty()
+	exception: Exception
 }
