@@ -68,4 +68,13 @@ export class CategoryService {
 		await this.categoryRepository.remove(category)
 		return true
 	}
+
+	async getCategoryExists(id: string) {
+		const category = await this.byId(id)
+		if (!category) {
+			throw new NotFoundException(`Product category by id ${id} not found`)
+		}
+
+		return category
+	}
 }
