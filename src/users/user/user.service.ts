@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	Injectable,
 	Logger,
+	NotFoundException,
 	OnModuleInit,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
@@ -103,12 +104,14 @@ export class UserService implements OnModuleInit {
 	}
 
 	async update(id: string, dto: UpdateUserDto) {
-		return await this.userRepository.update(id, dto)
+		const user = await this.getUserExists(id)
+		return await this.userRepository.save({ ...user, ...dto })
 	}
 
 	async remove(id: string) {
+		const user = await this.getUserExists(id)
 		try {
-			await this.userRepository.delete(id)
+			await this.userRepository.remove(user)
 		} catch {
 			return false
 		}
@@ -116,8 +119,39 @@ export class UserService implements OnModuleInit {
 		return true
 	}
 
+	async setRole(id: string, role: ROLE) {
+		const user = await this.getUserExists(id)
+
+		user.role = role
+
+		await this.userRepository.save(user)
+
+		return user
+	}
+
+	async subscribe(currentId: string, targetId: string) {
+		const currentUser = await this.getUserExists(currentId)
+		const targetUser = await this.getUserExists(targetId)
+
+		currentUser.following.push(targetUser)
+		targetUser.followers.push(currentUser)
+
+		await this.userRepository.save(currentUser)
+		await this.userRepository.save(targetUser)
+
+		return true
+	}
+
 	private async hashPassword(password: string) {
 		const salt = await genSalt(10)
 		return await hash(password, salt)
+	}
+
+	private async getUserExists(id: string) {
+		const user = await this.byId(id)
+		if (!user) {
+			throw new NotFoundException(`User by id ${id} not found`)
+		}
+		return user
 	}
 }

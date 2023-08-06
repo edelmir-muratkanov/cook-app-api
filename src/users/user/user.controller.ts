@@ -6,15 +6,24 @@ import {
 	Delete,
 	Put,
 	Query,
+	Patch,
+	ParseUUIDPipe,
 } from '@nestjs/common'
-import { ApiOkResponse, ApiOperation, ApiTags, OmitType } from '@nestjs/swagger'
+import {
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiParam,
+	ApiTags,
+	OmitType,
+} from '@nestjs/swagger'
 
 import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
 import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
+import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ParamIdDto } from 'src/shared/dto/param-id.dto'
 import { ROLE, User } from 'src/shared/providers/typeorm/entities'
 
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -38,7 +47,7 @@ export class UserController {
 	@ApiOkResponse({ type: User })
 	@ApiErrorResponse()
 	@Get(':id')
-	async findOne(@Param('id') { id }: ParamIdDto) {
+	async findOne(@Param('id', ParseUUIDPipe) id: string) {
 		return this.userService.byId(id)
 	}
 
@@ -65,7 +74,7 @@ export class UserController {
 	@ApiErrorResponse()
 	@Put(':id')
 	async update(@CurrentUser('id') id: string, @Body() dto: UpdateUserDto) {
-		return this.userService.update(id, dto)
+		return await this.userService.update(id, dto)
 	}
 
 	@Auth()
@@ -74,6 +83,33 @@ export class UserController {
 	@ApiErrorResponse()
 	@Delete(':id')
 	async remove(@CurrentUser('id') id: string) {
-		return this.userService.remove(id)
+		return await this.userService.remove(id)
+	}
+
+	@Auth()
+	@ApiOperation({ summary: 'Подписка на пользователя' })
+	@ApiOkResponse({ type: Boolean })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
+	@Patch(':id/subscribe')
+	async subscribe(
+		@CurrentUser('id') currentId: string,
+		@Param('id', ParseUUIDPipe) id: string,
+	) {
+		return await this.userService.subscribe(currentId, id)
+	}
+
+	@Auth(ROLE.ADMIN)
+	@ApiOperation({ summary: 'Назначение роли' })
+	@ApiOkResponse({ type: User })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
+	@ApiParam({ name: 'role', enum: ROLE })
+	@Patch(':id/:role')
+	async setRole(
+		@Param('id', ParseUUIDPipe) id: string,
+		@Param('role') role: ROLE,
+	) {
+		return await this.userService.setRole(id, role)
 	}
 }
