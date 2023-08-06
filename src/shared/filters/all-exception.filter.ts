@@ -38,11 +38,11 @@ export class AllExceptionsFilter<T> implements ExceptionFilter {
 
 	private _response(status: number, request: Request, exception: any) {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-		const message = exception.response.message
+		const message = exception?.response?.message
 			? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			  exception.response.message
+			  exception?.response?.message
 			: // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			  exception.message
+			  exception?.message
 
 		return {
 			statusCode: status,
