@@ -9,8 +9,8 @@ import { Repository } from 'typeorm'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { ProductCategory } from 'src/shared/providers/typeorm/entities'
 
-import { CreateCategoryDto } from './dto/create-category.dto'
-import { UpdateCategoryDto } from './dto/update-category.dto'
+import { CreateProductCategoryDto } from './dto/create-category.dto'
+import { UpdateProductCategoryDto } from './dto/update-category.dto'
 
 @Injectable()
 export class CategoryService {
@@ -19,7 +19,7 @@ export class CategoryService {
 		private readonly categoryRepository: Repository<ProductCategory>,
 	) {}
 
-	async create(dto: CreateCategoryDto) {
+	async create(dto: CreateProductCategoryDto) {
 		const category = await this.byName(dto.name)
 		if (category) {
 			throw new BadRequestException('Category already exists')
@@ -51,7 +51,7 @@ export class CategoryService {
 		})
 	}
 
-	async update(id: string, dto: UpdateCategoryDto) {
+	async update(id: string, dto: UpdateProductCategoryDto) {
 		const category = await this.byId(id)
 		if (!category) {
 			throw new NotFoundException(`Category by id ${id} not found`)

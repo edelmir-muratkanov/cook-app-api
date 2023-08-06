@@ -23,11 +23,11 @@ import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { ProductCategory, ROLE } from 'src/shared/providers/typeorm/entities'
 
 import { CategoryService } from './category.service'
-import { CreateCategoryDto } from './dto/create-category.dto'
-import { UpdateCategoryDto } from './dto/update-category.dto'
+import { CreateProductCategoryDto } from './dto/create-category.dto'
+import { UpdateProductCategoryDto } from './dto/update-category.dto'
 
 @ApiTags('product-category')
-@Controller('products/category')
+@Controller('products-category')
 export class CategoryController {
 	constructor(private readonly categoryService: CategoryService) {}
 
@@ -39,7 +39,7 @@ export class CategoryController {
 	@ApiErrorResponse()
 	@Auth(ROLE.ADMIN)
 	@Post()
-	async create(@Body() dto: CreateCategoryDto) {
+	async create(@Body() dto: CreateProductCategoryDto) {
 		return this.categoryService.create(dto)
 	}
 
@@ -71,7 +71,7 @@ export class CategoryController {
 	@Put(':id')
 	async update(
 		@Param('id') id: string,
-		@Body() updateCategoryDto: UpdateCategoryDto,
+		@Body() updateCategoryDto: UpdateProductCategoryDto,
 	) {
 		return this.categoryService.update(id, updateCategoryDto)
 	}
