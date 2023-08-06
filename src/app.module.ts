@@ -26,7 +26,14 @@ import { UsersModule } from './users/users.module'
 	providers: [
 		{
 			provide: APP_PIPE,
-			useClass: ValidationPipe,
+			useValue: new ValidationPipe({
+				transform: true,
+				validateCustomDecorators: true,
+				whitelist: true,
+				transformOptions: {
+					enableImplicitConversion: true,
+				},
+			}),
 		},
 		{
 			provide: APP_FILTER,
