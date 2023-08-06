@@ -7,6 +7,7 @@ import {
 	Delete,
 	Query,
 	Put,
+	ParseUUIDPipe,
 } from '@nestjs/common'
 import {
 	ApiNotFoundResponse,
@@ -56,7 +57,7 @@ export class CategoryController {
 	@ApiErrorResponse()
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Get(':id')
-	async findOne(@Param('id') id: string) {
+	async findOne(@Param('id', ParseUUIDPipe) id: string) {
 		return this.categoryService.byId(id)
 	}
 
@@ -70,7 +71,7 @@ export class CategoryController {
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Put(':id')
 	async update(
-		@Param('id') id: string,
+		@Param('id', ParseUUIDPipe) id: string,
 		@Body() updateCategoryDto: UpdateProductCategoryDto,
 	) {
 		return this.categoryService.update(id, updateCategoryDto)
@@ -85,7 +86,7 @@ export class CategoryController {
 	@ApiErrorResponse()
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Delete(':id')
-	async remove(@Param('id') id: string) {
+	async remove(@Param('id', ParseUUIDPipe) id: string) {
 		return this.categoryService.remove(id)
 	}
 }
