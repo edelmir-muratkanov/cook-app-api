@@ -3,44 +3,89 @@ import {
 	Get,
 	Post,
 	Body,
-	Patch,
 	Param,
 	Delete,
+	Query,
+	Put,
 } from '@nestjs/common'
+import {
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+} from '@nestjs/swagger'
+
+import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
+import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
+import { Auth } from 'src/shared/decorators/auth.decorator'
+import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
+import { PaginationDto } from 'src/shared/dto/pagination.dto'
+import { ProductCategory, ROLE } from 'src/shared/providers/typeorm/entities'
 
 import { CategoryService } from './category.service'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
 
-@Controller('category')
+@ApiTags('product-category')
+@Controller('products/category')
 export class CategoryController {
 	constructor(private readonly categoryService: CategoryService) {}
 
+	@ApiOperation({
+		summary: 'Создание категории',
+		description: 'Доступно только админам',
+	})
+	@ApiOkResponse({ type: ProductCategory })
+	@ApiErrorResponse()
+	@Auth(ROLE.ADMIN)
 	@Post()
-	create(@Body() createCategoryDto: CreateCategoryDto) {
-		return this.categoryService.create(createCategoryDto)
+	async create(@Body() dto: CreateCategoryDto) {
+		return this.categoryService.create(dto)
 	}
 
+	@ApiOperation({ summary: 'Получение всех категорий' })
+	@ApiPaginatedResponse(ProductCategory)
+	@ApiErrorResponse()
 	@Get()
-	findAll() {
-		return this.categoryService.findAll()
+	async findAll(@Query() dto: PaginationDto) {
+		return this.categoryService.findAll(dto)
 	}
 
+	@ApiOperation({ summary: 'Получение категории' })
+	@ApiOkResponse({ type: ProductCategory })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.categoryService.findOne(+id)
+	async findOne(@Param('id') id: string) {
+		return this.categoryService.byId(id)
 	}
 
-	@Patch(':id')
-	update(
+	@ApiOperation({
+		summary: 'Обновление категории',
+		description: 'Доступно только админам',
+	})
+	@Auth(ROLE.ADMIN)
+	@ApiOkResponse({ type: ProductCategory })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
+	@Put(':id')
+	async update(
 		@Param('id') id: string,
 		@Body() updateCategoryDto: UpdateCategoryDto,
 	) {
-		return this.categoryService.update(+id, updateCategoryDto)
+		return this.categoryService.update(id, updateCategoryDto)
 	}
 
+	@ApiOperation({
+		summary: 'Удаление категории',
+		description: 'Доступно только админам',
+	})
+	@Auth(ROLE.ADMIN)
+	@ApiOkResponse({ type: Boolean })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.categoryService.remove(+id)
+	async remove(@Param('id') id: string) {
+		return this.categoryService.remove(id)
 	}
 }

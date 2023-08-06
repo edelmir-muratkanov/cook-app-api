@@ -1,27 +1,71 @@
-import { Injectable } from '@nestjs/common'
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+
+import { PaginationDto } from 'src/shared/dto/pagination.dto'
+import { ProductCategory } from 'src/shared/providers/typeorm/entities'
 
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
 
 @Injectable()
 export class CategoryService {
-	create(createCategoryDto: CreateCategoryDto) {
-		return 'This action adds a new category'
+	constructor(
+		@InjectRepository(ProductCategory)
+		private readonly categoryRepository: Repository<ProductCategory>,
+	) {}
+
+	async create(dto: CreateCategoryDto) {
+		const category = await this.byName(dto.name)
+		if (category) {
+			throw new BadRequestException('Category already exists')
+		}
+		const newCategory = this.categoryRepository.create(dto)
+		return await this.categoryRepository.save(newCategory)
 	}
 
-	findAll() {
-		return `This action returns all category`
+	async findAll(pagination: PaginationDto) {
+		const [data, count] = await this.categoryRepository.findAndCount({
+			take: pagination.limit,
+			skip: pagination.offset,
+		})
+
+		return { data, count }
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} category`
+	async byId(id: string) {
+		return await this.categoryRepository.findOne({
+			where: { id },
+			relations: { products: true },
+		})
 	}
 
-	update(id: number, updateCategoryDto: UpdateCategoryDto) {
-		return `This action updates a #${id} category`
+	async byName(name: string) {
+		return await this.categoryRepository.findOne({
+			where: { name },
+			relations: { products: true },
+		})
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} category`
+	async update(id: string, dto: UpdateCategoryDto) {
+		const category = await this.byId(id)
+		if (!category) {
+			throw new NotFoundException(`Category by id ${id} not found`)
+		}
+
+		return await this.categoryRepository.save({ ...category, ...dto })
+	}
+
+	async remove(id: string) {
+		const category = await this.byId(id)
+		if (!category) {
+			throw new NotFoundException(`Category by id ${id} not found`)
+		}
+		await this.categoryRepository.remove(category)
+		return true
 	}
 }
