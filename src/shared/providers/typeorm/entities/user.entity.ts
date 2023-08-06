@@ -38,6 +38,9 @@ export class User extends BaseEntity {
 	@ApiProperty({ enum: ROLE, enumName: 'Role' })
 	role: ROLE
 
+	@Column({ nullable: true })
+	image?: string
+
 	@ManyToMany(() => User, user => user.following)
 	@JoinTable({ name: 'subsription' })
 	followers: User[]
