@@ -11,7 +11,7 @@ import { genSalt, hash } from 'bcrypt'
 import { Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ROLE, User } from 'src/shared/providers/typeorm/entities'
+import { ROLE, User } from 'src/shared/typeorm/entities'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'

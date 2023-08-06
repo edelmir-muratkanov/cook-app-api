@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ProductCategory } from 'src/shared/providers/typeorm/entities'
+import { ProductCategory } from 'src/shared/typeorm/entities'
 
 import { CreateProductCategoryDto } from './dto/create-category.dto'
 import { UpdateProductCategoryDto } from './dto/update-category.dto'

@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core'
 import { Observable } from 'rxjs'
 
-import { User, ROLE } from 'src/shared/providers/typeorm/entities'
+import { User, ROLE } from 'src/shared/typeorm/entities'
 
 @Injectable()
 export class AdminGuard implements CanActivate {

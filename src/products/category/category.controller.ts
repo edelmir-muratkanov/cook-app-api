@@ -21,7 +21,7 @@ import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-respon
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ProductCategory, ROLE } from 'src/shared/providers/typeorm/entities'
+import { ProductCategory, ROLE } from 'src/shared/typeorm/entities'
 
 import { CategoryService } from './category.service'
 import { CreateProductCategoryDto } from './dto/create-category.dto'

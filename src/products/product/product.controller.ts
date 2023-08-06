@@ -20,7 +20,7 @@ import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decor
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { Product, ROLE } from 'src/shared/providers/typeorm/entities'
+import { Product, ROLE } from 'src/shared/typeorm/entities'
 
 import { CreateProductDto } from './dto/create-product.dto'
 import { UpdateProductDto } from './dto/update-product.dto'

@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { AdminGuard, JwtGuard } from 'src/users/auth/guards'
 
 import { ErrorResponseDto } from '../dto/error-response.dto'
-import { ROLE } from '../providers/typeorm/entities'
+import { ROLE } from '../typeorm/entities'
 
 export const Auth = (role = ROLE.GUEST) =>
 	applyDecorators(

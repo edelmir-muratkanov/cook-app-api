@@ -10,13 +10,15 @@ import { FeedbackModule } from './feedback/feedback.module'
 import { ProductsModule } from './products/products.module'
 import { RecipesModule } from './recipes/recipes.module'
 import { AllExceptionsFilter } from './shared/filters/all-exception.filter'
-import { ProvidersModule } from './shared/providers/providers.module'
+import { TypeormModule } from './shared/typeorm/typeorm.module'
+import { UploadModule } from './shared/upload/upload.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
-		ProvidersModule,
+		TypeormModule,
+		UploadModule,
 
 		FeedbackModule,
 		UsersModule,

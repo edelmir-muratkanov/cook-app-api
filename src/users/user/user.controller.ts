@@ -24,7 +24,7 @@ import { Auth } from 'src/shared/decorators/auth.decorator'
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ROLE, User } from 'src/shared/providers/typeorm/entities'
+import { ROLE, User } from 'src/shared/typeorm/entities'
 
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserService } from './user.service'
