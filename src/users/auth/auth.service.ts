@@ -32,14 +32,14 @@ export class AuthService {
 
 		const tokens = await this.issueTokenPair(user)
 
-		return { user, tokens }
+		return { user: this.returnUserFields(user), tokens }
 	}
 
 	async register(dto: CreateUserDto) {
 		const user = await this.userService.create(dto)
 		const tokens = await this.issueTokenPair(user)
 
-		return { user, tokens }
+		return { user: this.returnUserFields(user), tokens }
 	}
 
 	async getNewTokens({ refreshToken }: RefreshTokenDto) {
@@ -53,7 +53,7 @@ export class AuthService {
 		}
 		const tokens = await this.issueTokenPair(user)
 
-		return { tokens, user }
+		return { tokens, user: this.returnUserFields(user) }
 	}
 
 	private async issueTokenPair(user: User) {
@@ -71,5 +71,13 @@ export class AuthService {
 		})
 
 		return { accessToken, refreshToken }
+	}
+
+	private returnUserFields(user: User) {
+		return {
+			id: user.id,
+			email: user.email,
+			role: user.role,
+		}
 	}
 }
