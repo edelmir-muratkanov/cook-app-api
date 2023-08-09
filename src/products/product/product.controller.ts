@@ -17,12 +17,14 @@ import {
 } from '@nestjs/swagger'
 
 import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
+import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { Product, ROLE } from 'src/shared/typeorm/entities'
 
 import { CreateProductDto } from './dto/create-product.dto'
+import { ProductFilterDto } from './dto/product-filter.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
 import { ProductService } from './product.service'
 
@@ -48,9 +50,13 @@ export class ProductController {
 		summary: 'Получение всех продуктов',
 	})
 	@ApiErrorResponse()
+	@ApiPaginatedResponse(Product)
 	@Get()
-	async findAll(@Query() dto: PaginationDto) {
-		return await this.productService.findAll(dto)
+	async findAll(
+		@Query() dto: PaginationDto,
+		@Query() filterDto: ProductFilterDto,
+	) {
+		return await this.productService.findAll(dto, filterDto)
 	}
 
 	@ApiOperation({

@@ -4,12 +4,13 @@ import {
 	NotFoundException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { Product } from 'src/shared/typeorm/entities'
 
 import { CreateProductDto } from './dto/create-product.dto'
+import { ProductFilterDto } from './dto/product-filter.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
 import { CategoryService } from '../category/category.service'
 
@@ -37,10 +38,18 @@ export class ProductService {
 		return await this.productRepository.save(newProduct)
 	}
 
-	async findAll(pagination: PaginationDto) {
+	async findAll(pagination: PaginationDto, filterDto: ProductFilterDto) {
+		const filterOptions: FindOptionsWhere<Product> = {
+			name: filterDto.name && ILike(`%${filterDto.name}%`),
+			category: {
+				id: filterDto.categoryId,
+			},
+		}
+
 		return await this.productRepository.findAndCount({
 			take: pagination.limit,
 			skip: pagination.offset,
+			where: filterOptions,
 		})
 	}
 
