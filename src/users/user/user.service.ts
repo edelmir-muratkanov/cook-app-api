@@ -8,13 +8,14 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { InjectRepository } from '@nestjs/typeorm'
 import { genSalt, hash } from 'bcrypt'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { ROLE, User } from 'src/shared/typeorm/entities'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
+import { UserFilterDto } from './dto/user-filter.dto'
 
 @Injectable()
 export class UserService implements OnModuleInit {
@@ -69,8 +70,16 @@ export class UserService implements OnModuleInit {
 		return await this.userRepository.save(newUser)
 	}
 
-	async findAll(pagination: PaginationDto) {
+	async findAll(pagination: PaginationDto, filter: UserFilterDto) {
+		const filterOptions: FindOptionsWhere<User> = {
+			username: filter.username && ILike(`%${filter.username}%`),
+			role: filter.role,
+		}
+
+		console.log(filterOptions)
+
 		const [data, count] = await this.userRepository.findAndCount({
+			where: filterOptions,
 			skip: pagination.offset,
 			take: pagination.limit,
 		})

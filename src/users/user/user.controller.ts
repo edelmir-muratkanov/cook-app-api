@@ -27,6 +27,7 @@ import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { ROLE, User } from 'src/shared/typeorm/entities'
 
 import { UpdateUserDto } from './dto/update-user.dto'
+import { UserFilterDto } from './dto/user-filter.dto'
 import { UserService } from './user.service'
 
 @ApiTags('user')
@@ -51,7 +52,7 @@ export class UserController {
 		return this.userService.byId(id)
 	}
 
-	@Auth(ROLE.ADMIN)
+	// @Auth(ROLE.ADMIN)
 	@ApiOperation({ summary: 'Получение всех пользователей' })
 	@ApiPaginatedResponse(
 		OmitType(User, [
@@ -64,8 +65,11 @@ export class UserController {
 	)
 	@ApiErrorResponse()
 	@Get()
-	async findAll(@Query() pagination: PaginationDto) {
-		return await this.userService.findAll(pagination)
+	async findAll(
+		@Query() pagination: PaginationDto,
+		@Query() filterDto: UserFilterDto,
+	) {
+		return await this.userService.findAll(pagination, filterDto)
 	}
 
 	@Auth()
