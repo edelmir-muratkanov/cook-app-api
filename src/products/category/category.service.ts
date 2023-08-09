@@ -4,11 +4,12 @@ import {
 	NotFoundException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { ProductCategory } from 'src/shared/typeorm/entities'
 
+import { CategoryFilterDto } from './dto/category-filter.dto'
 import { CreateProductCategoryDto } from './dto/create-category.dto'
 import { UpdateProductCategoryDto } from './dto/update-category.dto'
 
@@ -28,8 +29,12 @@ export class CategoryService {
 		return await this.categoryRepository.save(newCategory)
 	}
 
-	async findAll(pagination: PaginationDto) {
+	async findAll(pagination: PaginationDto, filter: CategoryFilterDto) {
+		const filterParams: FindOptionsWhere<ProductCategory> = {
+			name: filter.name ? ILike(`%${filter.name}%`) : undefined,
+		}
 		const [data, count] = await this.categoryRepository.findAndCount({
+			where: filterParams,
 			take: pagination.limit,
 			skip: pagination.offset,
 		})

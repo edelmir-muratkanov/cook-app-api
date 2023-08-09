@@ -24,6 +24,7 @@ import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { ProductCategory, ROLE } from 'src/shared/typeorm/entities'
 
 import { CategoryService } from './category.service'
+import { CategoryFilterDto } from './dto/category-filter.dto'
 import { CreateProductCategoryDto } from './dto/create-category.dto'
 import { UpdateProductCategoryDto } from './dto/update-category.dto'
 
@@ -48,8 +49,11 @@ export class CategoryController {
 	@ApiPaginatedResponse(ProductCategory)
 	@ApiErrorResponse()
 	@Get()
-	async findAll(@Query() dto: PaginationDto) {
-		return this.categoryService.findAll(dto)
+	async findAll(
+		@Query() dto: PaginationDto,
+		@Query() filterDto: CategoryFilterDto,
+	) {
+		return this.categoryService.findAll(dto, filterDto)
 	}
 
 	@ApiOperation({ summary: 'Получение категории' })
