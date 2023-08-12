@@ -1,27 +1,78 @@
-import { Injectable } from '@nestjs/common'
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
-import { CreateCategoryDto } from './dto/create-category.dto'
-import { UpdateCategoryDto } from './dto/update-category.dto'
+import { PaginationDto } from 'src/shared/dto/pagination.dto'
+import { RecipeCategory } from 'src/shared/typeorm/entities'
+
+import { RecipeCategoryFilterDto } from './dto/category-filter.dto'
+import { CreateRecipeCategoryDto } from './dto/create-category.dto'
+import { UpdateRecipeCategoryDto } from './dto/update-category.dto'
 
 @Injectable()
 export class CategoryService {
-	create(createCategoryDto: CreateCategoryDto) {
-		return 'This action adds a new category'
+	constructor(
+		@InjectRepository(RecipeCategory)
+		private readonly categoryRepository: Repository<RecipeCategory>,
+	) {}
+
+	async byId(id: string) {
+		return await this.categoryRepository.findOne({
+			where: { id },
+			relations: { groups: true },
+		})
 	}
 
-	findAll() {
-		return `This action returns all category`
+	async byName(name: string) {
+		return await this.categoryRepository.findOne({
+			where: { name },
+			relations: { groups: true },
+		})
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} category`
+	async getCategoryExists(id: string) {
+		const category = await this.byId(id)
+		if (!category) {
+			throw new NotFoundException(`Category by id ${id} not found`)
+		}
+		return category
 	}
 
-	update(id: number, updateCategoryDto: UpdateCategoryDto) {
-		return `This action updates a #${id} category`
+	async create(dto: CreateRecipeCategoryDto) {
+		const category = await this.byName(dto.name)
+		if (category) {
+			throw new BadRequestException('Category already exists')
+		}
+		const newCategory = this.categoryRepository.create(dto)
+		return await this.categoryRepository.save(newCategory)
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} category`
+	async findAll(pagination: PaginationDto, filter: RecipeCategoryFilterDto) {
+		const filterParams: FindOptionsWhere<RecipeCategory> = {
+			name: filter.name ? ILike(`%${filter.name}%`) : undefined,
+		}
+
+		const [data, count] = await this.categoryRepository.findAndCount({
+			where: filterParams,
+			skip: pagination.offset,
+			take: pagination.limit,
+		})
+
+		return { data, count }
+	}
+
+	async update(id: string, dto: UpdateRecipeCategoryDto) {
+		const category = await this.getCategoryExists(id)
+		return await this.categoryRepository.save({ ...category, ...dto })
+	}
+
+	async remove(id: string) {
+		const category = await this.getCategoryExists(id)
+		await this.categoryRepository.remove(category)
+		return true
 	}
 }
