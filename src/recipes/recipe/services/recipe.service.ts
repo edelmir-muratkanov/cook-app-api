@@ -1,0 +1,157 @@
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { FindOptionsWhere, ILike, Repository } from 'typeorm'
+
+import { PaginationDto } from 'src/shared/dto/pagination.dto'
+import { Recipe, User } from 'src/shared/typeorm/entities'
+import { UserService } from 'src/users/user/user.service'
+
+import { IngredientService } from './ingredient.service'
+import { InstructionService } from './instruction.service'
+import { CuisineService } from '../../cuisine/cuisine.service'
+import { GroupService } from '../../group/group.service'
+import { CreateRecipeDto } from '../dto/create-recipe.dto'
+import { FilterRecipeDto } from '../dto/filter-recipe.dto'
+import { UpdateRecipeDto } from '../dto/update-recipe.dto'
+
+@Injectable()
+export class RecipeService {
+	constructor(
+		@InjectRepository(Recipe)
+		private readonly recipeRepository: Repository<Recipe>,
+
+		private readonly cuisineService: CuisineService,
+		private readonly groupService: GroupService,
+		private readonly userService: UserService,
+
+		private readonly instructionService: InstructionService,
+		private readonly ingredientService: IngredientService,
+	) {}
+
+	async byId(id: string) {
+		return await this.recipeRepository.findOne({
+			where: { id },
+			relations: {
+				author: true,
+				ingredients: true,
+				instructions: true,
+				ratings: true,
+				comments: true,
+			},
+		})
+	}
+
+	async byName(name: string) {
+		return await this.recipeRepository.findOne({
+			where: { name },
+			relations: {
+				author: true,
+				ingredients: true,
+				instructions: true,
+				comments: true,
+				ratings: true,
+			},
+		})
+	}
+
+	async create(userId: string, dto: CreateRecipeDto) {
+		const { cuisineId, groupId, ingredients, instructions, ...rest } = dto
+
+		const cuisine = await this.cuisineService.getCuisineExists(cuisineId)
+		const group = await this.groupService.getGroupExists(groupId)
+		const user = (await this.userService.byId(userId)) as User
+
+		const newRecipe = this.recipeRepository.create({
+			author: user,
+			cuisine,
+			group,
+			...rest,
+		})
+
+		const recipe = await this.recipeRepository.save(newRecipe)
+
+		ingredients.map(async ingredient => {
+			await this.ingredientService.create(recipe.id, ingredient)
+		})
+
+		instructions.map(async instruction => {
+			await this.instructionService.create(recipe.id, instruction)
+		})
+
+		return recipe
+	}
+
+	async findAll(pagination: PaginationDto, filter: FilterRecipeDto) {
+		const filterParams: FindOptionsWhere<Recipe> = {
+			author: {
+				id: filter.authorId,
+			},
+			cuisine: {
+				id: filter.cuisineId,
+			},
+			group: {
+				id: filter.groupId,
+			},
+			ingredients: {
+				product: {
+					id: filter.productId,
+				},
+			},
+			name: filter.name && ILike(`%${filter.name}%`),
+		}
+
+		const [data, count] = await this.recipeRepository.findAndCount({
+			where: filterParams,
+			take: pagination.limit,
+			skip: pagination.offset,
+		})
+
+		return { data, count }
+	}
+
+	async getRecipeExists(id: string) {
+		const recipe = await this.byId(id)
+
+		if (!recipe) {
+			throw new NotFoundException(`Recipe by id ${id} not found`)
+		}
+		return recipe
+	}
+
+	async update(id: string, dto: UpdateRecipeDto) {
+		const { ingredients, instructions, ...rest } = dto
+
+		await this.getRecipeExists(id)
+
+		if (ingredients && ingredients.length) {
+			ingredients.map(async ingredient => {
+				await this.ingredientService.update(ingredient)
+			})
+		}
+
+		if (instructions && instructions.length) {
+			instructions.map(async instruction => {
+				await this.instructionService.update(instruction)
+			})
+		}
+
+		const recipe = await this.getRecipeExists(id)
+
+		return await this.recipeRepository.save({ ...recipe, ...rest })
+	}
+
+	async remove(id: string) {
+		const recipe = await this.getRecipeExists(id)
+		recipe.ingredients.map(async ingredient => {
+			await this.ingredientService.remove(ingredient.id)
+		})
+
+		recipe.instructions.map(async instruction => {
+			await this.instructionService.remove(instruction.id)
+		})
+
+		await this.recipeRepository.remove(recipe)
+
+		return true
+	}
+}

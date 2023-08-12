@@ -13,7 +13,6 @@ import { User } from './user.entity'
 @Entity()
 export class Recipe extends BaseEntity {
 	@ManyToOne(() => User, author => author.recipes)
-	@ApiHideProperty()
 	author: User
 
 	@ManyToOne(() => RecipeGroup, group => group.recipes)

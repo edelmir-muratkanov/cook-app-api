@@ -6,38 +6,95 @@ import {
 	Patch,
 	Param,
 	Delete,
+	ParseUUIDPipe,
+	Query,
 } from '@nestjs/common'
+import {
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+} from '@nestjs/swagger'
+
+import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
+import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
+import { Auth } from 'src/shared/decorators/auth.decorator'
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
+import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
+import { PaginationDto } from 'src/shared/dto/pagination.dto'
+import { Recipe } from 'src/shared/typeorm/entities'
 
 import { CreateRecipeDto } from './dto/create-recipe.dto'
+import { FilterRecipeDto } from './dto/filter-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
-import { RecipeService } from './recipe.service'
+import { RecipeService } from './services/recipe.service'
 
+@ApiTags('recipe')
 @Controller('recipe')
 export class RecipeController {
 	constructor(private readonly recipeService: RecipeService) {}
 
+	@ApiOperation({
+		summary: 'Создание рецепта вместе с ингредиентами и инструкциями',
+		description: 'Доступно только автору рецепта',
+	})
+	@ApiOkResponse({ type: Recipe })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
+	@Auth()
 	@Post()
-	create(@Body() createRecipeDto: CreateRecipeDto) {
-		return this.recipeService.create(createRecipeDto)
+	async create(
+		@CurrentUser('id') userId: string,
+		@Body() dto: CreateRecipeDto,
+	) {
+		return await this.recipeService.create(userId, dto)
 	}
 
+	@ApiOperation({
+		summary: 'Получение всех рецептов',
+	})
+	@ApiPaginatedResponse(Recipe)
+	@ApiErrorResponse()
 	@Get()
-	findAll() {
-		return this.recipeService.findAll()
+	async findAll(
+		@Query() dto: PaginationDto,
+		@Query() filterDto: FilterRecipeDto,
+	) {
+		return await this.recipeService.findAll(dto, filterDto)
 	}
 
+	@ApiOperation({ summary: 'Получение рецепта' })
+	@ApiOkResponse({ type: Recipe })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.recipeService.findOne(+id)
+	async findOne(@Param('id', ParseUUIDPipe) id: string) {
+		return await this.recipeService.byId(id)
 	}
 
+	@ApiOperation({
+		summary: 'Обновление рецепта',
+		description: 'Доступно только автору рецепта',
+	})
+	@ApiOkResponse({ type: Recipe })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
+	@Auth()
 	@Patch(':id')
-	update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto) {
-		return this.recipeService.update(+id, updateRecipeDto)
+	async update(@Param('id') id: string, @Body() dto: UpdateRecipeDto) {
+		return await this.recipeService.update(id, dto)
 	}
 
+	@ApiOperation({
+		summary: 'Удаление рецепта',
+		description: 'Доступно только автору рецепта',
+	})
+	@ApiOkResponse({ type: Boolean })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
+	@Auth()
 	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.recipeService.remove(+id)
+	async remove(@Param('id') id: string) {
+		return await this.recipeService.remove(id)
 	}
 }

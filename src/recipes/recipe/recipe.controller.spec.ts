@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { RecipeController } from './recipe.controller'
-import { RecipeService } from './recipe.service'
+import { RecipeService } from './services/recipe.service'
 
 describe('RecipeController', () => {
 	let controller: RecipeController
