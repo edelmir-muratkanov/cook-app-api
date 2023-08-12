@@ -57,19 +57,12 @@ export class CategoryService {
 	}
 
 	async update(id: string, dto: UpdateProductCategoryDto) {
-		const category = await this.byId(id)
-		if (!category) {
-			throw new NotFoundException(`Category by id ${id} not found`)
-		}
-
+		const category = await this.getCategoryExists(id)
 		return await this.categoryRepository.save({ ...category, ...dto })
 	}
 
 	async remove(id: string) {
-		const category = await this.byId(id)
-		if (!category) {
-			throw new NotFoundException(`Category by id ${id} not found`)
-		}
+		const category = await this.getCategoryExists(id)
 		await this.categoryRepository.remove(category)
 		return true
 	}
