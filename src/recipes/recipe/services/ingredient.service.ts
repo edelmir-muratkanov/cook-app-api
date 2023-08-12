@@ -16,7 +16,7 @@ export class IngredientService {
 		private readonly productService: ProductService,
 	) {}
 
-	async getIngredientExist(id: string) {
+	async findExists(id: string) {
 		const ingredient = await this.ingredientRepository.findOne({
 			where: {
 				id,
@@ -31,7 +31,7 @@ export class IngredientService {
 	}
 
 	async create(recipeId: string, dto: CreateIngredientDto) {
-		const product = await this.productService.getProductExists(dto.productId)
+		const product = await this.productService.findExists(dto.productId)
 
 		const ingredient = this.ingredientRepository.create({
 			recipe: { id: recipeId },
@@ -42,12 +42,12 @@ export class IngredientService {
 	}
 
 	async update(dto: UpdateIngredientDto) {
-		const ingredient = await this.getIngredientExist(dto.id)
+		const ingredient = await this.findExists(dto.id)
 		return await this.ingredientRepository.save({ ...ingredient, ...dto })
 	}
 
 	async remove(id: string) {
-		const ingredient = await this.getIngredientExist(id)
+		const ingredient = await this.findExists(id)
 		await this.ingredientRepository.remove(ingredient)
 		return true
 	}

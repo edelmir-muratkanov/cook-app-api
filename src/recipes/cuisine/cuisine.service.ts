@@ -9,6 +9,7 @@ import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { Cuisine } from 'src/shared/typeorm/entities'
 
+import { CuisineIdentifiers, CuisineRelations } from './cuisine.interface'
 import { CreateCuisineDto } from './dto/create-cuisine.dto'
 import { FilterCuisineDto } from './dto/filter-cuisine.dto'
 import { UpdateCuisineDto } from './dto/update-cuisine.dto'
@@ -20,24 +21,15 @@ export class CuisineService {
 		private readonly cuisineRepository: Repository<Cuisine>,
 	) {}
 
-	async byId(id: string) {
+	async findOne(identifiers: CuisineIdentifiers, relations?: CuisineRelations) {
 		return await this.cuisineRepository.findOne({
-			where: { id },
-			relations: {
-				recipes: true,
-			},
+			where: identifiers,
+			relations: relations,
 		})
 	}
 
-	async byName(name: string) {
-		return await this.cuisineRepository.findOne({
-			where: { name },
-			relations: { recipes: true },
-		})
-	}
-
-	async getCuisineExists(id: string) {
-		const cuisine = await this.byId(id)
+	async findExists(id: string) {
+		const cuisine = await this.findOne({ id })
 		if (!cuisine) {
 			throw new NotFoundException(`Cuisine by id ${id} not found`)
 		}
@@ -45,7 +37,7 @@ export class CuisineService {
 	}
 
 	async create(dto: CreateCuisineDto) {
-		const cuisine = await this.byName(dto.name)
+		const cuisine = await this.findOne({ name: dto.name })
 		if (cuisine) {
 			throw new BadRequestException('Cuisine already exists')
 		}
@@ -69,12 +61,12 @@ export class CuisineService {
 	}
 
 	async update(id: string, dto: UpdateCuisineDto) {
-		const cuisine = await this.getCuisineExists(id)
+		const cuisine = await this.findExists(id)
 		return await this.cuisineRepository.save({ ...cuisine, ...dto })
 	}
 
 	async remove(id: string) {
-		const cuisine = await this.getCuisineExists(id)
+		const cuisine = await this.findExists(id)
 		await this.cuisineRepository.remove(cuisine)
 		return true
 	}

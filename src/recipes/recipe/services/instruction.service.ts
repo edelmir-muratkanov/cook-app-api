@@ -14,7 +14,7 @@ export class InstructionService {
 		private readonly instructionRepository: Repository<Instruction>,
 	) {}
 
-	async getInstructionExists(id: string) {
+	async findExists(id: string) {
 		const instruction = await this.instructionRepository.findOne({
 			where: { id },
 		})
@@ -37,13 +37,13 @@ export class InstructionService {
 	}
 
 	async update(dto: UpdateInstructionDto) {
-		const instruction = await this.getInstructionExists(dto.id)
+		const instruction = await this.findExists(dto.id)
 
 		return await this.instructionRepository.save({ ...instruction, ...dto })
 	}
 
 	async remove(id: string) {
-		const instruction = await this.getInstructionExists(id)
+		const instruction = await this.findExists(id)
 		await this.instructionRepository.remove(instruction)
 		return true
 	}

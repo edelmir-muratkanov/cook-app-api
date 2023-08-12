@@ -41,7 +41,16 @@ export class UserController {
 	@ApiErrorResponse()
 	@Get('me')
 	async me(@CurrentUser('id') id: string) {
-		return this.userService.byId(id)
+		return this.userService.findOne(
+			{ id },
+			{
+				comments: true,
+				followers: true,
+				following: true,
+				ratings: true,
+				recipes: true,
+			},
+		)
 	}
 
 	@ApiOperation({ summary: 'Получение пользователя' })
@@ -49,7 +58,10 @@ export class UserController {
 	@ApiErrorResponse()
 	@Get(':id')
 	async findOne(@Param('id', ParseUUIDPipe) id: string) {
-		return this.userService.byId(id)
+		return this.userService.findOne(
+			{ id },
+			{ followers: true, following: true, recipes: true },
+		)
 	}
 
 	// @Auth(ROLE.ADMIN)

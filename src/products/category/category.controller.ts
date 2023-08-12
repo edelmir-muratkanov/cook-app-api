@@ -62,7 +62,7 @@ export class CategoryController {
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Get(':id')
 	async findOne(@Param('id', ParseUUIDPipe) id: string) {
-		return this.categoryService.byId(id)
+		return this.categoryService.findOne({ id }, { products: true })
 	}
 
 	@ApiOperation({

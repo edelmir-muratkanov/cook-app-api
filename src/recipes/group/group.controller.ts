@@ -62,7 +62,7 @@ export class GroupController {
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Get(':id')
 	async findOne(@Param('id') id: string) {
-		return this.groupService.byId(id)
+		return this.groupService.findOne({ id }, { recipes: true })
 	}
 
 	@ApiOperation({

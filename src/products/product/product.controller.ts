@@ -67,7 +67,7 @@ export class ProductController {
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Get(':id')
 	async findOne(@Param('id', ParseUUIDPipe) id: string) {
-		return await this.productService.byId(id)
+		return await this.productService.findOne({ id }, { ingredients: true })
 	}
 
 	@Auth(ROLE.ADMIN)

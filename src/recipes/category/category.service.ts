@@ -9,6 +9,10 @@ import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { RecipeCategory } from 'src/shared/typeorm/entities'
 
+import {
+	RecipeCategoryIdentifiers,
+	RecipeCategoryRelations,
+} from './category.interface'
 import { RecipeCategoryFilterDto } from './dto/category-filter.dto'
 import { CreateRecipeCategoryDto } from './dto/create-category.dto'
 import { UpdateRecipeCategoryDto } from './dto/update-category.dto'
@@ -20,22 +24,18 @@ export class CategoryService {
 		private readonly categoryRepository: Repository<RecipeCategory>,
 	) {}
 
-	async byId(id: string) {
+	async findOne(
+		identifiers: RecipeCategoryIdentifiers,
+		relations?: RecipeCategoryRelations,
+	) {
 		return await this.categoryRepository.findOne({
-			where: { id },
-			relations: { groups: true },
+			where: identifiers,
+			relations: relations,
 		})
 	}
 
-	async byName(name: string) {
-		return await this.categoryRepository.findOne({
-			where: { name },
-			relations: { groups: true },
-		})
-	}
-
-	async getCategoryExists(id: string) {
-		const category = await this.byId(id)
+	async findExists(id: string) {
+		const category = await this.findOne({ id })
 		if (!category) {
 			throw new NotFoundException(`Category by id ${id} not found`)
 		}
@@ -43,7 +43,7 @@ export class CategoryService {
 	}
 
 	async create(dto: CreateRecipeCategoryDto) {
-		const category = await this.byName(dto.name)
+		const category = await this.findOne({ name: dto.name })
 		if (category) {
 			throw new BadRequestException('Category already exists')
 		}
@@ -66,12 +66,12 @@ export class CategoryService {
 	}
 
 	async update(id: string, dto: UpdateRecipeCategoryDto) {
-		const category = await this.getCategoryExists(id)
+		const category = await this.findExists(id)
 		return await this.categoryRepository.save({ ...category, ...dto })
 	}
 
 	async remove(id: string) {
-		const category = await this.getCategoryExists(id)
+		const category = await this.findExists(id)
 		await this.categoryRepository.remove(category)
 		return true
 	}

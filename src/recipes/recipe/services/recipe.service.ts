@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { Recipe, User } from 'src/shared/typeorm/entities'
+import { Recipe } from 'src/shared/typeorm/entities'
 import { UserService } from 'src/users/user/user.service'
 
 import { IngredientService } from './ingredient.service'
@@ -13,6 +13,7 @@ import { GroupService } from '../../group/group.service'
 import { CreateRecipeDto } from '../dto/create-recipe.dto'
 import { FilterRecipeDto } from '../dto/filter-recipe.dto'
 import { UpdateRecipeDto } from '../dto/update-recipe.dto'
+import { RecipeIdentifiers, RecipeRelations } from '../recipe.interface'
 
 @Injectable()
 export class RecipeService {
@@ -28,38 +29,12 @@ export class RecipeService {
 		private readonly ingredientService: IngredientService,
 	) {}
 
-	async byId(id: string) {
-		return await this.recipeRepository.findOne({
-			where: { id },
-			relations: {
-				author: true,
-				ingredients: true,
-				instructions: true,
-				ratings: true,
-				comments: true,
-			},
-		})
-	}
-
-	async byName(name: string) {
-		return await this.recipeRepository.findOne({
-			where: { name },
-			relations: {
-				author: true,
-				ingredients: true,
-				instructions: true,
-				comments: true,
-				ratings: true,
-			},
-		})
-	}
-
 	async create(userId: string, dto: CreateRecipeDto) {
 		const { cuisineId, groupId, ingredients, instructions, ...rest } = dto
 
-		const cuisine = await this.cuisineService.getCuisineExists(cuisineId)
-		const group = await this.groupService.getGroupExists(groupId)
-		const user = (await this.userService.byId(userId)) as User
+		const cuisine = await this.cuisineService.findExists(cuisineId)
+		const group = await this.groupService.findExists(groupId)
+		const user = await this.userService.findExists(userId)
 
 		const newRecipe = this.recipeRepository.create({
 			author: user,
@@ -109,8 +84,15 @@ export class RecipeService {
 		return { data, count }
 	}
 
-	async getRecipeExists(id: string) {
-		const recipe = await this.byId(id)
+	async findOne(identifiers: RecipeIdentifiers, relations?: RecipeRelations) {
+		return await this.recipeRepository.findOne({
+			where: identifiers,
+			relations,
+		})
+	}
+
+	async findExists(id: string) {
+		const recipe = await this.findOne({ id })
 
 		if (!recipe) {
 			throw new NotFoundException(`Recipe by id ${id} not found`)
@@ -121,7 +103,7 @@ export class RecipeService {
 	async update(id: string, dto: UpdateRecipeDto) {
 		const { ingredients, instructions, ...rest } = dto
 
-		await this.getRecipeExists(id)
+		await this.findExists(id)
 
 		if (ingredients && ingredients.length) {
 			ingredients.map(async ingredient => {
@@ -135,13 +117,13 @@ export class RecipeService {
 			})
 		}
 
-		const recipe = await this.getRecipeExists(id)
+		const recipe = await this.findExists(id)
 
 		return await this.recipeRepository.save({ ...recipe, ...rest })
 	}
 
 	async remove(id: string) {
-		const recipe = await this.getRecipeExists(id)
+		const recipe = await this.findExists(id)
 		recipe.ingredients.map(async ingredient => {
 			await this.ingredientService.remove(ingredient.id)
 		})

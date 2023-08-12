@@ -16,6 +16,7 @@ import { ROLE, User } from 'src/shared/typeorm/entities'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserFilterDto } from './dto/user-filter.dto'
+import { UserIdentifiers, UserRelations } from './user.interface'
 
 @Injectable()
 export class UserService implements OnModuleInit {
@@ -58,7 +59,7 @@ export class UserService implements OnModuleInit {
 	}
 
 	async create(dto: CreateUserDto) {
-		const user = await this.byEmail(dto.email)
+		const user = await this.findOne({ email: dto.email })
 		if (user) {
 			throw new BadRequestException('User already exists')
 		}
@@ -86,39 +87,28 @@ export class UserService implements OnModuleInit {
 		return { data, count }
 	}
 
-	async byId(id: string) {
+	async findOne(identifiers: UserIdentifiers, relations?: UserRelations) {
 		return await this.userRepository.findOne({
-			where: { id },
-			relations: {
-				followers: true,
-				following: true,
-				recipes: true,
-				ratings: true,
-				comments: true,
-			},
+			where: identifiers,
+			relations,
 		})
 	}
 
-	async byEmail(email: string) {
-		return await this.userRepository.findOne({
-			where: { email },
-			relations: {
-				followers: true,
-				following: true,
-				recipes: true,
-				ratings: true,
-				comments: true,
-			},
-		})
+	async findExists(id: string) {
+		const user = await this.findOne({ id })
+		if (!user) {
+			throw new NotFoundException(`User by id ${id} not found`)
+		}
+		return user
 	}
 
 	async update(id: string, dto: UpdateUserDto) {
-		const user = await this.getUserExists(id)
+		const user = await this.findExists(id)
 		return await this.userRepository.save({ ...user, ...dto })
 	}
 
 	async remove(id: string) {
-		const user = await this.getUserExists(id)
+		const user = await this.findExists(id)
 		try {
 			await this.userRepository.remove(user)
 		} catch {
@@ -129,7 +119,7 @@ export class UserService implements OnModuleInit {
 	}
 
 	async setRole(id: string, role: ROLE) {
-		const user = await this.getUserExists(id)
+		const user = await this.findExists(id)
 
 		user.role = role
 
@@ -139,8 +129,8 @@ export class UserService implements OnModuleInit {
 	}
 
 	async subscribe(currentId: string, targetId: string) {
-		const currentUser = await this.getUserExists(currentId)
-		const targetUser = await this.getUserExists(targetId)
+		const currentUser = await this.findExists(currentId)
+		const targetUser = await this.findExists(targetId)
 
 		currentUser.following.push(targetUser)
 		targetUser.followers.push(currentUser)
@@ -154,13 +144,5 @@ export class UserService implements OnModuleInit {
 	private async hashPassword(password: string) {
 		const salt = await genSalt(10)
 		return await hash(password, salt)
-	}
-
-	private async getUserExists(id: string) {
-		const user = await this.byId(id)
-		if (!user) {
-			throw new NotFoundException(`User by id ${id} not found`)
-		}
-		return user
 	}
 }

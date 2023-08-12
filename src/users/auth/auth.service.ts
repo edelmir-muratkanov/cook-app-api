@@ -20,7 +20,7 @@ export class AuthService {
 	) {}
 
 	async login(dto: LoginDto) {
-		const user = await this.userService.byEmail(dto.email)
+		const user = await this.userService.findOne({ email: dto.email })
 		if (!user) {
 			throw new UnauthorizedException('Invalid creadentials')
 		}
@@ -47,7 +47,7 @@ export class AuthService {
 		if (!result) {
 			throw new UnauthorizedException()
 		}
-		const user = await this.userService.byId(result.id)
+		const user = await this.userService.findOne({ id: result.id })
 		if (!user) {
 			throw new UnauthorizedException()
 		}

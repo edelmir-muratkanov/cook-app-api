@@ -12,6 +12,7 @@ import { RecipeGroup } from 'src/shared/typeorm/entities'
 import { CreateGroupDto } from './dto/create-group.dto'
 import { GroupFilterDto } from './dto/filter-group.dto'
 import { UpdateGroupDto } from './dto/update-group.dto'
+import { GroupIdentifiers, GroupRelations } from './group.interface'
 import { CategoryService } from '../category/category.service'
 
 @Injectable()
@@ -22,22 +23,15 @@ export class GroupService {
 		private readonly categoryService: CategoryService,
 	) {}
 
-	async byId(id: string) {
+	async findOne(identifiers: GroupIdentifiers, relations?: GroupRelations) {
 		return await this.groupRepository.findOne({
-			where: { id },
-			relations: { recipes: true },
+			where: identifiers,
+			relations,
 		})
 	}
 
-	async byName(name: string) {
-		return await this.groupRepository.findOne({
-			where: { name },
-			relations: { recipes: true },
-		})
-	}
-
-	async getGroupExists(id: string) {
-		const group = await this.byId(id)
+	async findExists(id: string) {
+		const group = await this.findOne({ id })
 		if (!group) {
 			throw new NotFoundException(`Group by id ${id} not found`)
 		}
@@ -45,13 +39,11 @@ export class GroupService {
 	}
 
 	async create(dto: CreateGroupDto) {
-		const group = await this.byName(dto.name)
+		const group = await this.findOne({ name: dto.name })
 		if (group) {
 			throw new BadRequestException('Group alredy exists')
 		}
-		const category = await this.categoryService.getCategoryExists(
-			dto.categoryId,
-		)
+		const category = await this.categoryService.findExists(dto.categoryId)
 		const newGroup = this.groupRepository.create({
 			name: dto.name,
 			description: dto.description,
@@ -79,12 +71,12 @@ export class GroupService {
 	}
 
 	async update(id: string, dto: UpdateGroupDto) {
-		const group = await this.getGroupExists(id)
+		const group = await this.findExists(id)
 		return await this.groupRepository.save({ ...group, ...dto })
 	}
 
 	async remove(id: string) {
-		const group = await this.getGroupExists(id)
+		const group = await this.findExists(id)
 		await this.groupRepository.remove(group)
 		return true
 	}

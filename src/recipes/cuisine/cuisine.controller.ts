@@ -62,7 +62,7 @@ export class CuisineController {
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Get(':id')
 	async findOne(@Param('id', ParseUUIDPipe) id: string) {
-		return await this.cuisineService.byId(id)
+		return await this.cuisineService.findOne({ id }, { recipes: true })
 	}
 
 	@ApiOperation({

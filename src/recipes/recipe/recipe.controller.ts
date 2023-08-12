@@ -69,7 +69,17 @@ export class RecipeController {
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Get(':id')
 	async findOne(@Param('id', ParseUUIDPipe) id: string) {
-		return await this.recipeService.byId(id)
+		return await this.recipeService.findOne(
+			{ id },
+			{
+				author: true,
+				comments: true,
+				cuisine: true,
+				ingredients: true,
+				instructions: true,
+				ratings: true,
+			},
+		)
 	}
 
 	@ApiOperation({

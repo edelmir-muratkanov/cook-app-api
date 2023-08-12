@@ -12,6 +12,7 @@ import { Product } from 'src/shared/typeorm/entities'
 import { CreateProductDto } from './dto/create-product.dto'
 import { ProductFilterDto } from './dto/product-filter.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
+import { ProductIdentifiers, ProductRelations } from './product.interface'
 import { CategoryService } from '../category/category.service'
 
 @Injectable()
@@ -23,14 +24,12 @@ export class ProductService {
 	) {}
 
 	async create(dto: CreateProductDto) {
-		const product = await this.byName(dto.name)
+		const product = await this.findOne({ name: dto.name })
 
 		if (product) {
 			throw new BadRequestException('Product already exists')
 		}
-		const category = await this.categoryService.getCategoryExists(
-			dto.categoryId,
-		)
+		const category = await this.categoryService.findExists(dto.categoryId)
 
 		const newProduct = this.productRepository.create(dto)
 		newProduct.category = category
@@ -53,32 +52,31 @@ export class ProductService {
 		})
 	}
 
-	async byId(id: string) {
-		return await this.productRepository.findOne({ where: { id } })
+	async findOne(identifiers: ProductIdentifiers, relations?: ProductRelations) {
+		return await this.productRepository.findOne({
+			where: identifiers,
+			relations: relations,
+		})
 	}
 
-	async byName(name: string) {
-		return await this.productRepository.findOne({ where: { name } })
+	async findExists(id: string) {
+		const product = await this.findOne({ id })
+		if (!product) {
+			throw new NotFoundException(`Product by id ${id} not found`)
+		}
+		return product
 	}
 
 	async update(id: string, dto: UpdateProductDto) {
-		const product = await this.getProductExists(id)
+		const product = await this.findExists(id)
 
 		return await this.productRepository.save({ ...product, ...dto })
 	}
 
 	async remove(id: string) {
-		const product = await this.getProductExists(id)
+		const product = await this.findExists(id)
 		await this.productRepository.remove(product)
 
 		return true
-	}
-
-	async getProductExists(id: string) {
-		const product = await this.byId(id)
-		if (!product) {
-			throw new NotFoundException(`Product by id ${id} not found`)
-		}
-		return product
 	}
 }
