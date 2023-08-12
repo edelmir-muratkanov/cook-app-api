@@ -9,6 +9,9 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
 	const configService = app.get(ConfigService)
 	const port = configService.get<number>('APP_PORT', 8000)
+
+	app.setGlobalPrefix('api')
+
 	const config = new DocumentBuilder()
 		.setTitle('Cook app')
 		.setDescription('Cook app documentation')
@@ -18,11 +21,13 @@ async function bootstrap() {
 
 	const document = SwaggerModule.createDocument(app, config)
 
-	SwaggerModule.setup('api', app, document)
+	SwaggerModule.setup('api/docs', app, document)
 
-	await app.listen(port, () => {
-		Logger.log(`Server started on port ${port}`)
-		Logger.log(`Swagger documentation avalable at http://localhost:${port}/api`)
+	await app.listen(port, async () => {
+		const serverUrl = await app.getUrl()
+
+		Logger.log(`Server started ${serverUrl}`)
+		Logger.log(`Swagger documentation avalable at ${serverUrl}/api/docs`)
 	})
 }
 
