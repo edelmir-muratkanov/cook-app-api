@@ -8,6 +8,7 @@ import {
 	Delete,
 	ParseUUIDPipe,
 	Query,
+	Put,
 } from '@nestjs/common'
 import {
 	ApiNotFoundResponse,
@@ -24,6 +25,7 @@ import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
 import { Recipe } from 'src/shared/typeorm/entities'
 
+import { CreateReactionDto } from './dto/create-reaction.dto'
 import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { FilterRecipeDto } from './dto/filter-recipe.dto'
 import { UpdateRecipeDto } from './dto/update-recipe.dto'
@@ -90,9 +92,22 @@ export class RecipeController {
 	@ApiErrorResponse()
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Auth()
-	@Patch(':id')
-	async update(@Param('id') id: string, @Body() dto: UpdateRecipeDto) {
+	@Put(':id')
+	async update(
+		@Param('id', ParseUUIDPipe) id: string,
+		@Body() dto: UpdateRecipeDto,
+	) {
 		return await this.recipeService.update(id, dto)
+	}
+
+	@Auth()
+	@Patch(':id/react')
+	async react(
+		@Param('id', ParseUUIDPipe) id: string,
+		@CurrentUser('id') userId: string,
+		@Body() dto: CreateReactionDto,
+	) {
+		return await this.recipeService.rate(id, userId, dto)
 	}
 
 	@ApiOperation({

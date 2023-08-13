@@ -77,8 +77,6 @@ export class UserService implements OnModuleInit {
 			role: filter.role,
 		}
 
-		console.log(filterOptions)
-
 		const [data, count] = await this.userRepository.findAndCount({
 			where: filterOptions,
 			skip: pagination.offset,

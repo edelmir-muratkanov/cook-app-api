@@ -1,15 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { Recipe } from 'src/shared/typeorm/entities'
+import { Rating, Recipe } from 'src/shared/typeorm/entities'
 import { UserService } from 'src/users/user/user.service'
 
 import { IngredientService } from './ingredient.service'
 import { InstructionService } from './instruction.service'
 import { CuisineService } from '../../cuisine/cuisine.service'
 import { GroupService } from '../../group/group.service'
+import { CreateReactionDto } from '../dto/create-reaction.dto'
 import { CreateRecipeDto } from '../dto/create-recipe.dto'
 import { FilterRecipeDto } from '../dto/filter-recipe.dto'
 import { UpdateRecipeDto } from '../dto/update-recipe.dto'
@@ -20,6 +25,8 @@ export class RecipeService {
 	constructor(
 		@InjectRepository(Recipe)
 		private readonly recipeRepository: Repository<Recipe>,
+		@InjectRepository(Rating)
+		private readonly ratingRepository: Repository<Rating>,
 
 		private readonly cuisineService: CuisineService,
 		private readonly groupService: GroupService,
@@ -133,6 +140,36 @@ export class RecipeService {
 		})
 
 		await this.recipeRepository.remove(recipe)
+
+		return true
+	}
+
+	async rate(id: string, userId: string, { reaction }: CreateReactionDto) {
+		const recipe = await this.findOne({ id }, { author: true })
+		const user = await this.userService.findExists(userId)
+
+		if (!recipe) {
+			throw new NotFoundException(`Recipe by id ${id} not found`)
+		}
+
+		if (recipe.author.id === user.id) {
+			throw new BadRequestException('Author can not react')
+		}
+
+		const rating = await this.ratingRepository.findOne({
+			where: {
+				recipe: {
+					id: recipe.id,
+				},
+				user: { id: user.id },
+			},
+		})
+
+		if (rating) {
+			await this.ratingRepository.save({ ...rating, reaction })
+		} else {
+			await this.ratingRepository.save({ user, recipe, reaction })
+		}
 
 		return true
 	}

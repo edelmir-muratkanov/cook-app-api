@@ -2,7 +2,12 @@ import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { ProductModule } from 'src/products/product/product.module'
-import { Ingredient, Instruction, Recipe } from 'src/shared/typeorm/entities'
+import {
+	Ingredient,
+	Instruction,
+	Rating,
+	Recipe,
+} from 'src/shared/typeorm/entities'
 import { UserModule } from 'src/users/user/user.module'
 
 import { RecipeController } from './recipe.controller'
@@ -16,7 +21,7 @@ import { GroupModule } from '../group/group.module'
 	controllers: [RecipeController],
 	providers: [RecipeService, IngredientService, InstructionService],
 	imports: [
-		TypeOrmModule.forFeature([Recipe, Ingredient, Instruction]),
+		TypeOrmModule.forFeature([Recipe, Ingredient, Instruction, Rating]),
 		GroupModule,
 		CuisineModule,
 		UserModule,
