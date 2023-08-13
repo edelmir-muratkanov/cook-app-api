@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { compare } from 'bcrypt'
 
-import { User } from 'src/shared/typeorm/entities'
+import { User } from 'src/shared/database/entities'
 
 import { Payload } from './auth.interface'
 import { LoginDto } from './dto/login.dto'

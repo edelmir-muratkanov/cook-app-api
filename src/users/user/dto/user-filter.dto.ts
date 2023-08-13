@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 
-import { ROLE } from 'src/shared/typeorm/entities'
+import { ROLE } from 'src/shared/database/entities'
 
 export class UserFilterDto {
 	@IsOptional()

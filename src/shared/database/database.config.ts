@@ -4,7 +4,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { ENTITIES } from './entities'
 
 export const options = (configService: ConfigService): TypeOrmModuleOptions => {
-	const isProd = configService.get<boolean>('APP_IS_PROD', false)
+	const nodeEnv = configService.get<string>('NODE_ENV')
 	const name = configService.get<string>('DB_NAME')
 	const user = configService.get<string>('DB_USER')
 	const pass = configService.get<string>('DB_PASS')
@@ -18,7 +18,7 @@ export const options = (configService: ConfigService): TypeOrmModuleOptions => {
 	return {
 		type: 'postgres',
 		schema: 'public',
-		logging: !isProd,
+		logging: nodeEnv !== 'prod',
 		entities: ENTITIES,
 		synchronize: true,
 		database: name,

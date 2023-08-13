@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { options } from './typeorm.config'
+import { options } from './database.config'
 
 @Module({
 	imports: [
@@ -12,4 +12,4 @@ import { options } from './typeorm.config'
 		}),
 	],
 })
-export class TypeormModule {}
+export class DatabaseModule {}

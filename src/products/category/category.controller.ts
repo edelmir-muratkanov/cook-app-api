@@ -16,12 +16,12 @@ import {
 	ApiTags,
 } from '@nestjs/swagger'
 
+import { ProductCategory, ROLE } from 'src/shared/database/entities'
 import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
 import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ProductCategory, ROLE } from 'src/shared/typeorm/entities'
 
 import { CategoryService } from './category.service'
 import { CategoryFilterDto } from './dto/category-filter.dto'

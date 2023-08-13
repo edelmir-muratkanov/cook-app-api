@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
 import { ProductService } from 'src/products/product/product.service'
-import { Ingredient } from 'src/shared/typeorm/entities'
+import { Ingredient } from 'src/shared/database/entities'
 
 import { CreateIngredientDto } from '../dto/create-ingredient.dto'
 import { UpdateIngredientDto } from '../dto/update-ingredient.dto'

@@ -16,12 +16,12 @@ import {
 	ApiTags,
 } from '@nestjs/swagger'
 
+import { ROLE, RecipeGroup } from 'src/shared/database/entities'
 import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
 import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ROLE, RecipeGroup } from 'src/shared/typeorm/entities'
 
 import { CreateGroupDto } from './dto/create-group.dto'
 import { GroupFilterDto } from './dto/filter-group.dto'

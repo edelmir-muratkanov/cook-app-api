@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 
-import { User } from 'src/shared/typeorm/entities'
+import { User } from 'src/shared/database/entities'
 import { UserService } from 'src/users/user/user.service'
 
 @Injectable()

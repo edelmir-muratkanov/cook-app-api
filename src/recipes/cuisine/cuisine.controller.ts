@@ -16,12 +16,12 @@ import {
 	ApiTags,
 } from '@nestjs/swagger'
 
+import { Cuisine, ROLE } from 'src/shared/database/entities'
 import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
 import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { Cuisine, ROLE } from 'src/shared/typeorm/entities'
 
 import { CuisineService } from './cuisine.service'
 import { CreateCuisineDto } from './dto/create-cuisine.dto'

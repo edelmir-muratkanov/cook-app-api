@@ -8,7 +8,7 @@ import {
 	Instruction,
 	Rating,
 	Recipe,
-} from 'src/shared/typeorm/entities'
+} from 'src/shared/database/entities'
 import { UserModule } from 'src/users/user/user.module'
 
 import { RecipeController } from './recipe.controller'

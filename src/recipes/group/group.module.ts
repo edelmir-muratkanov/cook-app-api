@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { RecipeGroup } from 'src/shared/typeorm/entities'
+import { RecipeGroup } from 'src/shared/database/entities'
 
 import { GroupController } from './group.controller'
 import { GroupService } from './group.service'

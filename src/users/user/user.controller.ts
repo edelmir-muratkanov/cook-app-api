@@ -18,13 +18,13 @@ import {
 	OmitType,
 } from '@nestjs/swagger'
 
+import { ROLE, User } from 'src/shared/database/entities'
 import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
 import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ROLE, User } from 'src/shared/typeorm/entities'
 
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserFilterDto } from './dto/user-filter.dto'

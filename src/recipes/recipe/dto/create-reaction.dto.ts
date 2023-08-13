@@ -1,6 +1,6 @@
 import { IsEnum } from 'class-validator'
 
-import { REACTION } from 'src/shared/typeorm/entities'
+import { REACTION } from 'src/shared/database/entities'
 
 export class CreateReactionDto {
 	@IsEnum(REACTION)

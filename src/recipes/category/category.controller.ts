@@ -17,12 +17,12 @@ import {
 } from '@nestjs/swagger'
 
 import { CategoryFilterDto } from 'src/products/category/dto/category-filter.dto'
+import { ROLE, RecipeCategory } from 'src/shared/database/entities'
 import { ApiErrorResponse } from 'src/shared/decorators/api-error-response.decorator'
 import { ApiPaginatedResponse } from 'src/shared/decorators/api-paginated-response.decorator'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ROLE, RecipeCategory } from 'src/shared/typeorm/entities'
 
 import { CategoryService } from './category.service'
 import { CreateRecipeCategoryDto } from './dto/create-category.dto'

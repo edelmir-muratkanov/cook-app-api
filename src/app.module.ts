@@ -8,15 +8,15 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 
 import { ProductsModule } from './products/products.module'
 import { RecipesModule } from './recipes/recipes.module'
+import { DatabaseModule } from './shared/database/database.module'
 import { AllExceptionsFilter } from './shared/filters/all-exception.filter'
-import { TypeormModule } from './shared/typeorm/typeorm.module'
 import { UploadModule } from './shared/upload/upload.module'
 import { UsersModule } from './users/users.module'
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
-		TypeormModule,
+		DatabaseModule,
 		UploadModule,
 
 		UsersModule,

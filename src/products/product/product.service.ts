@@ -6,8 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
+import { Product } from 'src/shared/database/entities'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { Product } from 'src/shared/typeorm/entities'
 
 import { CreateProductDto } from './dto/create-product.dto'
 import { ProductFilterDto } from './dto/product-filter.dto'

@@ -1,6 +1,6 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsUUID } from 'class-validator'
 
-import { UNIT } from 'src/shared/typeorm/entities'
+import { UNIT } from 'src/shared/database/entities'
 
 export class CreateIngredientDto {
 	@IsUUID()

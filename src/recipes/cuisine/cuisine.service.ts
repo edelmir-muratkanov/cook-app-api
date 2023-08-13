@@ -6,8 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
+import { Cuisine } from 'src/shared/database/entities'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { Cuisine } from 'src/shared/typeorm/entities'
 
 import { CuisineIdentifiers, CuisineRelations } from './cuisine.interface'
 import { CreateCuisineDto } from './dto/create-cuisine.dto'

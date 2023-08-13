@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { Instruction } from 'src/shared/typeorm/entities'
+import { Instruction } from 'src/shared/database/entities'
 
 import { CreateInstructionDto } from '../dto/create-instruction.dto'
 import { UpdateInstructionDto } from '../dto/update-instruction.dto'

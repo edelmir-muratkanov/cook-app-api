@@ -1,6 +1,6 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common'
 
-import { User } from '../typeorm/entities'
+import { User } from '../database/entities'
 
 export const CurrentUser = createParamDecorator(
 	(data: keyof User, ctx: ExecutionContext) => {

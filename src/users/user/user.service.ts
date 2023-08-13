@@ -10,8 +10,8 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { genSalt, hash } from 'bcrypt'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
+import { ROLE, User } from 'src/shared/database/entities'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ROLE, User } from 'src/shared/typeorm/entities'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'

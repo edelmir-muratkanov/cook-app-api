@@ -6,8 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
+import { RecipeGroup } from 'src/shared/database/entities'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { RecipeGroup } from 'src/shared/typeorm/entities'
 
 import { CreateGroupDto } from './dto/create-group.dto'
 import { GroupFilterDto } from './dto/filter-group.dto'

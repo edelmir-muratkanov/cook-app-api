@@ -7,8 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
+import { ROLE, Rating, Recipe, Comment } from 'src/shared/database/entities'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ROLE, Rating, Recipe, Comment } from 'src/shared/typeorm/entities'
 import { UserService } from 'src/users/user/user.service'
 
 import { IngredientService } from './ingredient.service'
