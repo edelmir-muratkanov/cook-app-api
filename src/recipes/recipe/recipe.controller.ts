@@ -100,6 +100,13 @@ export class RecipeController {
 		return await this.recipeService.update(id, dto)
 	}
 
+	@ApiOperation({
+		summary: 'Оценить рецепт',
+		description: 'Доступно только авторизованным пользователям',
+	})
+	@ApiOkResponse({ type: Boolean })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Auth()
 	@Patch(':id/react')
 	async react(
