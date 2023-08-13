@@ -1,6 +1,24 @@
 version: '3'
 
 services:
+  dev:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    command: yarn start:dev
+    depends_on:
+      - postgres
+    ports:
+      - "5000:5000"
+    networks:
+      - cook_app
+
   postgres:
     image: postgres
     restart: always
@@ -14,6 +32,8 @@ services:
       - pg_data:/var/lib/postgresql/data
     ports:
       - "${DB_PORT}:5432"
+    networks:
+      - cook_app
 
   pgadmin:
     image: dpage/pgadmin4:7.2
@@ -27,8 +47,14 @@ services:
     ports:
       - "5050:80"
     restart: unless-stopped
+    networks:
+      - cook_app
     
 
 volumes:
   pg_data:
   pgadmin-data:
+
+networks:
+  cook_app:
+    driver: bridge
