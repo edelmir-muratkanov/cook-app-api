@@ -96,10 +96,26 @@ export class RecipeService {
 	}
 
 	async findOne(identifiers: RecipeIdentifiers, relations?: RecipeRelations) {
-		return await this.recipeRepository.findOne({
+		const recipe = await this.recipeRepository.findOne({
 			where: identifiers,
-			relations,
+			relations: {
+				...relations,
+				comments: relations?.comments && {
+					parent: true,
+					children: {
+						children: true,
+					},
+				},
+			},
 		})
+
+		if (recipe?.comments) {
+			recipe.comments = recipe?.comments.filter(
+				comment => comment.parent === null || comment.parent == undefined,
+			)
+		}
+
+		return recipe
 	}
 
 	async findExists(id: string) {
