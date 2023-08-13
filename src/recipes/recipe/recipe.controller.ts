@@ -126,7 +126,7 @@ export class RecipeController {
 	@ApiNotFoundResponse({ type: ErrorResponseDto })
 	@Auth()
 	@Delete(':id')
-	async remove(@Param('id') id: string) {
-		return await this.recipeService.remove(id)
+	async remove(@CurrentUser('id') userId: string, @Param('id') id: string) {
+		return await this.recipeService.remove(id, userId)
 	}
 }

@@ -1,5 +1,6 @@
 import {
 	BadRequestException,
+	ForbiddenException,
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common'
@@ -7,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { Rating, Recipe } from 'src/shared/typeorm/entities'
+import { ROLE, Rating, Recipe } from 'src/shared/typeorm/entities'
 import { UserService } from 'src/users/user/user.service'
 
 import { IngredientService } from './ingredient.service'
@@ -129,8 +130,18 @@ export class RecipeService {
 		return await this.recipeRepository.save({ ...recipe, ...rest })
 	}
 
-	async remove(id: string) {
-		const recipe = await this.findExists(id)
+	async remove(id: string, userId: string) {
+		const recipe = await this.findOne({ id }, { author: true })
+		const user = await this.userService.findExists(userId)
+
+		if (!recipe) {
+			throw new NotFoundException(`Recipe by id ${id} not found`)
+		}
+
+		if (user.id !== recipe.author.id || user.role !== ROLE.ADMIN) {
+			throw new ForbiddenException('Access only for admins and author')
+		}
+
 		recipe.ingredients.map(async ingredient => {
 			await this.ingredientService.remove(ingredient.id)
 		})
