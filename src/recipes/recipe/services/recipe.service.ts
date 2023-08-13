@@ -8,13 +8,14 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { FindOptionsWhere, ILike, Repository } from 'typeorm'
 
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { ROLE, Rating, Recipe } from 'src/shared/typeorm/entities'
+import { ROLE, Rating, Recipe, Comment } from 'src/shared/typeorm/entities'
 import { UserService } from 'src/users/user/user.service'
 
 import { IngredientService } from './ingredient.service'
 import { InstructionService } from './instruction.service'
 import { CuisineService } from '../../cuisine/cuisine.service'
 import { GroupService } from '../../group/group.service'
+import { CreateCommentDto } from '../dto/create-comment.dto'
 import { CreateReactionDto } from '../dto/create-reaction.dto'
 import { CreateRecipeDto } from '../dto/create-recipe.dto'
 import { FilterRecipeDto } from '../dto/filter-recipe.dto'
@@ -28,6 +29,8 @@ export class RecipeService {
 		private readonly recipeRepository: Repository<Recipe>,
 		@InjectRepository(Rating)
 		private readonly ratingRepository: Repository<Rating>,
+		@InjectRepository(Comment)
+		private readonly commentRepository: Repository<Comment>,
 
 		private readonly cuisineService: CuisineService,
 		private readonly groupService: GroupService,
@@ -200,5 +203,25 @@ export class RecipeService {
 		}
 
 		return true
+	}
+
+	async comment(id: string, userId: string, dto: CreateCommentDto) {
+		const recipe = await this.findExists(id)
+		const user = await this.userService.findExists(userId)
+
+		const newComment = this.commentRepository.create({
+			user,
+			recipe,
+			text: dto.text,
+		})
+		const parentComment = await this.commentRepository.findOne({
+			where: { id: dto.parentId },
+		})
+
+		if (parentComment) {
+			newComment.parent = parentComment
+		}
+
+		return await this.commentRepository.save(newComment)
 	}
 }

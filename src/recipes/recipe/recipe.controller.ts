@@ -23,8 +23,9 @@ import { Auth } from 'src/shared/decorators/auth.decorator'
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
 import { ErrorResponseDto } from 'src/shared/dto/error-response.dto'
 import { PaginationDto } from 'src/shared/dto/pagination.dto'
-import { Recipe } from 'src/shared/typeorm/entities'
+import { Comment, Recipe } from 'src/shared/typeorm/entities'
 
+import { CreateCommentDto } from './dto/create-comment.dto'
 import { CreateReactionDto } from './dto/create-reaction.dto'
 import { CreateRecipeDto } from './dto/create-recipe.dto'
 import { FilterRecipeDto } from './dto/filter-recipe.dto'
@@ -116,6 +117,23 @@ export class RecipeController {
 		@Body() dto: CreateReactionDto,
 	) {
 		return await this.recipeService.rate(id, userId, dto)
+	}
+
+	@ApiOperation({
+		summary: 'Комментирование рецепта',
+		description: 'Доступно только авторизованным пользователям',
+	})
+	@ApiOkResponse({ type: Comment })
+	@ApiErrorResponse()
+	@ApiNotFoundResponse({ type: ErrorResponseDto })
+	@Auth()
+	@Patch(':id/comment')
+	async comment(
+		@Param('id', ParseUUIDPipe) id: string,
+		@CurrentUser('id') userId: string,
+		@Body() dto: CreateCommentDto,
+	) {
+		return await this.recipeService.comment(id, userId, dto)
 	}
 
 	@ApiOperation({

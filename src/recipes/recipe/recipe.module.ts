@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { ProductModule } from 'src/products/product/product.module'
 import {
+	Comment,
 	Ingredient,
 	Instruction,
 	Rating,
@@ -21,7 +22,13 @@ import { GroupModule } from '../group/group.module'
 	controllers: [RecipeController],
 	providers: [RecipeService, IngredientService, InstructionService],
 	imports: [
-		TypeOrmModule.forFeature([Recipe, Ingredient, Instruction, Rating]),
+		TypeOrmModule.forFeature([
+			Recipe,
+			Ingredient,
+			Instruction,
+			Rating,
+			Comment,
+		]),
 		GroupModule,
 		CuisineModule,
 		UserModule,
