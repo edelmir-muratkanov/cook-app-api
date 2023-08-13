@@ -94,10 +94,11 @@ export class RecipeController {
 	@Auth()
 	@Put(':id')
 	async update(
+		@CurrentUser('id') userId: string,
 		@Param('id', ParseUUIDPipe) id: string,
 		@Body() dto: UpdateRecipeDto,
 	) {
-		return await this.recipeService.update(id, dto)
+		return await this.recipeService.update(id, userId, dto)
 	}
 
 	@ApiOperation({

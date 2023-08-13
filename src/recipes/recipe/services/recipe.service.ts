@@ -108,10 +108,28 @@ export class RecipeService {
 		return recipe
 	}
 
-	async update(id: string, dto: UpdateRecipeDto) {
-		const { ingredients, instructions, ...rest } = dto
+	async update(id: string, userId: string, dto: UpdateRecipeDto) {
+		const recipe = await this.findOne(
+			{ id },
+			{
+				author: true,
+				ingredients: true,
+				instructions: true,
+				cuisine: true,
+			},
+		)
 
-		await this.findExists(id)
+		if (!recipe) {
+			throw new NotFoundException(`Recipe by id ${id} not found`)
+		}
+
+		const user = await this.userService.findExists(userId)
+
+		if (user.id !== recipe.author.id || user.role !== ROLE.ADMIN) {
+			throw new ForbiddenException('Access only for admins and author')
+		}
+
+		const { ingredients, instructions, ...rest } = dto
 
 		if (ingredients && ingredients.length) {
 			ingredients.map(async ingredient => {
@@ -125,18 +143,17 @@ export class RecipeService {
 			})
 		}
 
-		const recipe = await this.findExists(id)
-
 		return await this.recipeRepository.save({ ...recipe, ...rest })
 	}
 
 	async remove(id: string, userId: string) {
 		const recipe = await this.findOne({ id }, { author: true })
-		const user = await this.userService.findExists(userId)
 
 		if (!recipe) {
 			throw new NotFoundException(`Recipe by id ${id} not found`)
 		}
+
+		const user = await this.userService.findExists(userId)
 
 		if (user.id !== recipe.author.id || user.role !== ROLE.ADMIN) {
 			throw new ForbiddenException('Access only for admins and author')
