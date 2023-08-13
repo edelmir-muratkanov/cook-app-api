@@ -38,7 +38,7 @@ export class RecipeController {
 
 	@ApiOperation({
 		summary: 'Создание рецепта вместе с ингредиентами и инструкциями',
-		description: 'Доступно только автору рецепта',
+		description: 'Доступно только авторизованным пользователям',
 	})
 	@ApiOkResponse({ type: Recipe })
 	@ApiErrorResponse()
