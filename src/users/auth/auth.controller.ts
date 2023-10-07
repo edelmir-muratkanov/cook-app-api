@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
 import {
+	ApiBadRequestResponse,
 	ApiOperation,
 	ApiResponse,
 	ApiTags,
@@ -23,7 +24,7 @@ export class AuthController {
 	@ApiOperation({ summary: 'Авторизация пользователя' })
 	@ApiResponse({ status: HttpStatus.OK, type: AuthResponse })
 	@ApiErrorResponse()
-	@ApiUnauthorizedResponse({ type: ErrorResponseDto })
+	@ApiBadRequestResponse({ type: ErrorResponseDto })
 	@HttpCode(HttpStatus.OK)
 	@Post('login')
 	async login(@Body() dto: LoginDto) {
@@ -33,7 +34,7 @@ export class AuthController {
 	@ApiOperation({ summary: 'Регистрация пользователя' })
 	@ApiResponse({ status: HttpStatus.OK, type: AuthResponse })
 	@ApiErrorResponse()
-	@ApiUnauthorizedResponse({ type: ErrorResponseDto })
+	@ApiBadRequestResponse({ type: ErrorResponseDto })
 	@HttpCode(HttpStatus.OK)
 	@Post('register')
 	async register(@Body() dto: CreateUserDto) {
