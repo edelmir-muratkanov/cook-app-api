@@ -1,4 +1,4 @@
-FROM node:18 AS dev
+FROM node:21 AS dev
 
 WORKDIR /usr/src/app
 
@@ -15,7 +15,7 @@ RUN yarn build
 
 
 
-FROM node:18 AS prod
+FROM node:21 AS prod
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
